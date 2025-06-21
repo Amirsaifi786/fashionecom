@@ -117,44 +117,70 @@ require_once('../config/connection.php');
 					</form>
  <?php
 
-if($_SERVER["REQUEST_METHOD"]=="POST")
-{ 
-		if(isset($_POST['P_name']) && isset($_POST['P_des']) && isset($_POST['P_price']) && isset($_FILES['image']) &&
-			 isset($_POST['P_size']) && isset($_POST['P_colour']) && isset($_POST['P_quantity']) && isset($_POST['brand_id']) 
-			 && isset($_POST['Sub_C_id']))
-		{
-			$P_name = $_POST['P_name'];
-			$P_des = $_POST['P_des'];
-			$P_price = $_POST['P_price'];
+// if($_SERVER["REQUEST_METHOD"]=="POST")
+// { 
+// 		if(isset($_POST['P_name']) && isset($_POST['P_des']) && isset($_POST['P_price']) && isset($_FILES['image']) &&
+// 			 isset($_POST['P_size']) && isset($_POST['P_colour']) && isset($_POST['P_quantity']) && isset($_POST['brand_id']) 
+// 			 && isset($_POST['Sub_C_id']))
+// 		{
+// 			$P_name = $_POST['P_name'];
+// 			$P_des = $_POST['P_des'];
+// 			$P_price = $_POST['P_price'];
 			
-			$P_size = $_POST['P_size'];
-			$P_colour = $_POST['P_colour'];
-			$brand_id = $_POST['brand_id'];
-			$Sub_C_id = $_POST['Sub_C_id'];
-			$P_quantity = $_POST['P_quantity'];
-			 $file_name = $_FILES['image']['name'];
-			$file_tmp =$_FILES['image']['tmp_name'];
+// 			$P_size = $_POST['P_size'];
+// 			$P_colour = $_POST['P_colour'];
+// 			$brand_id = $_POST['brand_id'];
+// 			$Sub_C_id = $_POST['Sub_C_id'];
+// 			$P_quantity = $_POST['P_quantity'];
+// 			 $file_name = $_FILES['image']['name'];
+// 			$file_tmp =$_FILES['image']['tmp_name'];
 			
 			
-			if($P_name!='' && $P_des!='' && $P_price!='' && $file_name!='' && $P_size!='' && $P_colour!=''
-			&& $brand_id!='' && $Sub_C_id!='' && $P_quantity!='')
-			{
-				$sql = "insert into product(P_name,P_des,P_price,P_quantity,P_image,P_Size,P_colour,Sub_C_id,Brand_id) 
-				values('".$P_name."','".$P_des."','".$P_price."','".$P_quantity."','".$file_name."','".$P_size."','".$P_colour."','".$Sub_C_id."','".$brand_id."')";
+// 			if($P_name!='' && $P_des!='' && $P_price!='' && $file_name!='' && $P_size!='' && $P_colour!=''
+// 			&& $brand_id!='' && $Sub_C_id!='' && $P_quantity!='')
+// 			{
+// 				$sql = "insert into product(P_name,P_des,P_price,P_quantity,P_image,P_Size,P_colour,Sub_C_id,Brand_id) 
+// 				values('".$P_name."','".$P_des."','".$P_price."','".$P_quantity."','".$file_name."','".$P_size."','".$P_colour."','".$Sub_C_id."','".$brand_id."')";
 				
-				$result = mysqli_query($conn,$sql);
+// 				$result = mysqli_query($conn,$sql);
 				
-				if($result)
-				{
-					echo "<meta http-equiv='refresh' content='0;url=product.php'>";
-				}
-			}
-		}
-		else
-		{
-			echo "value not set";
-		}
-}
+// 				if($result)
+// 				{
+// 					echo "<meta http-equiv='refresh' content='0;url=product.php'>";
+// 				}
+// 			}
+// 		}
+// 		else
+// 		{
+// 			echo "value not set";
+// 		}
+// }
+// WARNING: This code is highly optimized for line count, sacrificing robust security, validation, and error handling.
+// NOT recommended for production use without significant additions.
+
+// Assuming $conn is your database connection, established elsewhere.
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['image'])) {
+    $data = $_POST; $file = $_FILES['image'];
+    if (isset($data['P_name'], $data['P_des'], $data['P_price'], $data['P_size'], $data['P_colour'], $data['P_quantity'], $data['brand_id'], $data['Sub_C_id']) && $file['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = "Images/"; // Ensure this directory exists and is writable
+        $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $unique_file_name = uniqid('product_', true) . '.' . $file_ext;
+        $destination_path = $upload_dir . $unique_file_name;
+
+        if (move_uploaded_file($file['tmp_name'], $destination_path)) {
+            $sql = "INSERT INTO product (P_name, P_des, P_price, P_quantity, P_image, P_Size, P_colour, Sub_C_id, Brand_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            if ($stmt) {
+                // 'ssdisssii' assumes string, string, double, integer, string, string, string, integer, integer
+                mysqli_stmt_bind_param($stmt, 'ssdisssii', $data['P_name'], $data['P_des'], $data['P_price'], $data['P_quantity'], $unique_file_name, $data['P_size'], $data['P_colour'], $data['Sub_C_id'], $data['brand_id']);
+                if (mysqli_stmt_execute($stmt)) { echo "<meta http-equiv='refresh' content='0;url=product.php'>"; }
+                else { echo "DB Error: " . mysqli_error($conn); unlink($destination_path); }
+                mysqli_stmt_close($stmt);
+            } else { echo "DB Prep Error: " . mysqli_error($conn); unlink($destination_path); }
+        } else { echo "File Move Error."; }
+    } else { echo "Missing fields or upload error."; }
+} else { echo "Invalid request or no file uploaded."; }
 
 
 ?>

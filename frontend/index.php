@@ -82,37 +82,42 @@
         </div>
         <div class="row property__gallery">
             	<?php
-										$sql="select * from product p join `sub-category` s where p.Sub_C_id=s.Sub_C_id";
-										$result=mysqli_query($conn,$sql);
-										while($row=mysqli_fetch_array($result))
-										{
-											?>
-            <div class="col-lg-3 col-md-4 col-sm-6 mix women">
-                <div class="product__item">
-                    <div class="product__item__pic set-bg" data-setbg="img/product/<?php echo $row['P_image']?>">
-                        <div class="label new">New</div>
-                        <ul class="product__hover">
-                            <li><a href="img/product/<?php echo $row['P_image']?>" class="image-popup"><span class="arrow_expand"></span></a></li>
-                            <li><a href="#"><span class="icon_heart_alt"></span></a></li>
-                            <li><a href="#"><span class="icon_bag_alt"></span></a></li>
-                        </ul>
-                    </div>
-                    <div class="product__item__text">
-                        <h6><a href="#">Buttons tweed blazer</a></h6>
-                        <div class="rating">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                        </div>
-                        <div class="product__price">$ 59.0</div>
-                    </div>
-                </div>
+// Assuming $conn is your database connection
+
+$sql = "select * from product p join `sub-category` s where p.Sub_C_id=s.Sub_C_id";
+$result = mysqli_query($conn, $sql);
+
+while ($row = mysqli_fetch_array($result)) {
+?>
+    <div class="col-lg-3 col-md-4 col-sm-6 mix women">
+        <div class="product__item">
+            <!-- Corrected path for data-setbg -->
+            <div class="product__item__pic set-bg" data-setbg="../admin/Images/<?php echo $row['P_image']?>">
+                <div class="label new">New</div>
+                <ul class="product__hover">
+                    <!-- Corrected path for image-popup link -->
+                    <li><a href="../admin/Images/<?php echo $row['P_image']?>" class="image-popup"><span class="arrow_expand"></span></a></li>
+                    <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                    <li><a href="#"><span class="icon_bag_alt"></span></a></li>
+                </ul>
             </div>
-            <?php
-										}
-							?>
+            <div class="product__item__text">
+                <h6><a href="#"><?php echo $row['P_name'];?></a></h6>
+                <div class="rating">
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                </div>
+                <div class="product__price"><?php echo $row['P_price'];?></div>
+            </div>
+        </div>
+    </div>
+<?php
+}
+?>
+
             <!-- <div class="col-lg-3 col-md-4 col-sm-6 mix men">
                 <div class="product__item">
                     <div class="product__item__pic set-bg" data-setbg="img/product/product-2.jpg">
