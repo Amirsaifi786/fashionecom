@@ -51,7 +51,7 @@
 							<td><?php echo $row['P_des']?></td>
 							<td><?php echo $row['P_price']?></td>
 							<td><?php echo $row['P_quantity']?></td>
-							<td><img src="../Images/<?php echo $row['P_image']?>"height="50" width="50" style="border-radius:50%"></td>
+							<td><img src="../admin/Images/<?php echo $row['P_image']?>"height="50" width="50" style="border-radius:50%"></td>
 							<td><?php echo $row['P_Size']?></td>
 							<td><?php echo $row['P_colour']?></td>
 							<td><?php echo $row['Sub_C_name']?></td>

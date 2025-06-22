@@ -110,80 +110,125 @@ $row1 = mysqli_fetch_array($result);
             </div>
           </div>
         </section>
-		<?php
+          <?php
+$id = $_GET['id'];
+
+// Fetch current user for old image
+$query = "SELECT * FROM product WHERE P_id = '$id'";
+$result = mysqli_query($conn, $query);
+$pro = mysqli_fetch_assoc($result);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (
+        isset($_POST["P_name"], $_POST["P_des"], $_POST["P_price"],
+              $_POST["P_size"], $_POST["P_colour"], $_POST["Brand_id"], $_POST["Sub_C_id"], $_POST["P_quantity"])
+    ) {
 
-    // Get product ID from URL
-    if (!isset($_GET['id'])) {
-        die("Product ID is missing in the URL.");
-    }
-    $id = $_GET['id'];
+			$P_name = $_POST['P_name'];
+			$P_des = $_POST['P_des'];
+			$P_price = $_POST['P_price'];
+			$P_image = $_POST['P_image'];
+			$P_size = $_POST['P_size'];
+			$P_colour = $_POST['P_colour'];
+			$Brand_id = $_POST['Brand_id'];
+			$Sub_C_id = $_POST['Sub_C_id'];
+			$P_quantity = $_POST['P_quantity'];
 
-    // Get POST values
-    $P_name     = $_POST['P_name'] ?? '';
-    $P_des      = $_POST['P_des'] ?? '';
-    $P_price    = $_POST['P_price'] ?? '';
-    $P_size     = $_POST['P_size'] ?? '';
-    $P_colour   = $_POST['P_colour'] ?? '';
-    $P_quantity = $_POST['P_quantity'] ?? '';
-    $Brand_id   = $_POST['Brand_id'] ?? '';
-    $Sub_C_id   = $_POST['Sub_C_id'] ?? '';
 
-    // Validate required fields
-    if ($P_name == '' || $P_des == '' || $P_price == '' || $P_size == '' || $P_colour == '' || $P_quantity == '' || $Brand_id == '' || $Sub_C_id == '') {
-        echo "All fields are required.";
-        exit;
-    }
 
-    // Handle image upload
-    if (isset($_FILES['P_image']) && $_FILES['P_image']['error'] == 0) {
-        $uploadDir = "Images/";
-        $P_image = basename($_FILES['P_image']['name']);
-        $targetFile = $uploadDir . $P_image;
 
-        if (!move_uploaded_file($_FILES['P_image']['tmp_name'], $targetFile)) {
-            echo "Failed to upload image.";
-            exit;
+        if ($P_name && $P_des && $P_price && $P_size && $P_colour && $Brand_id && $Sub_C_id && $P_quantity) {
+            // 📁 Ensure folder exists
+            $target_dir = "Images/";
+            if (!is_dir($target_dir)) {
+                mkdir($target_dir, 0755, true);
+            }
+
+            // 🖼 Handle image only if uploaded
+            $image_path = $pro['P_imgage']; // default to existing image
+            if (isset($_FILES['P_imgage']) && $_FILES['P_imgage']['error'] === 0) {
+                $image_name = time() . "_" . basename($_FILES["P_imgage"]["name"]);
+                $target_file = $target_dir . $image_name;
+                if (move_uploaded_file($_FILES["P_imgage"]["tmp_name"], $target_file)) {
+                    $image_path = $image_name;
+                } else {
+                    echo "<div style='color:red'>❌ Failed to upload image.</div>";
+                }
+            }
+
+            // ✅ Update query
+            // $sql = "UPDATE user SET 
+            //             User_name = '$pro_name',
+            //             P_imgage = '$image_path',
+            //             Email = '$Email',
+            //             Address = '$Address',
+            //             Contact_no = '$Contact_no',
+            //             Password = '$Password',
+            //             Area_id = '$Area_id'
+            //         WHERE User_id = '$id'";
+                    				$sql = "update product set P_name='".$P_name."',P_des='".$P_des."',P_price='".$P_price."',P_image='".$image_name."',
+						P_Size='".$P_size."',P_colour='".$P_colour."',P_quantity='".$P_quantity."',Brand_id='".$Brand_id."',Sub_C_id='".$Sub_C_id."' 
+						where P_id='".$id."'";
+
+            $result = mysqli_query($conn, $sql);
+            if ($result) {
+                echo "<div style='color:green'>✅ User updated successfully.</div>";
+                echo "<meta http-equiv='refresh' content='3;url=product.php'>";
+                exit;
+            } else {
+                echo "<div style='color:red'>❌ Database error: " . mysqli_error($conn) . "</div>";
+            }
+        } else {
+            echo "<div style='color:red'>❌ Some required fields are empty.</div>";
         }
-
-        // Update with new image
-        $sql = "UPDATE product SET 
-                    P_name='$P_name',
-                    P_des='$P_des',
-                    P_price='$P_price',
-                    P_image='$P_image',
-                    P_size='$P_size',
-                    P_colour='$P_colour',
-                    P_quantity='$P_quantity',
-                    Brand_id='$Brand_id',
-                    Sub_C_id='$Sub_C_id'
-                WHERE P_id='$id'";
     } else {
-        // Update without changing image
-        $sql = "UPDATE product SET 
-                    P_name='$P_name',
-                    P_des='$P_des',
-                    P_price='$P_price',
-                    P_size='$P_size',
-                    P_colour='$P_colour',
-                    P_quantity='$P_quantity',
-                    Brand_id='$Brand_id',
-                    Sub_C_id='$Sub_C_id'
-                WHERE P_id='$id'";
-    }
-
-    $result = mysqli_query($conn, $sql);
-
-    if ($result) {
-        echo "<meta http-equiv='refresh' content='0;url=product.php'>";
-        exit;
-    } else {
-        echo "Failed to update product: " . mysqli_error($conn);
+        echo "<div style='color:red'>❌ Form submission error. Please check fields.</div>";
     }
 }
 ?>
+		<?php
 
+// if($_SERVER["REQUEST_METHOD"]=="POST")
+// { 
+// 		if(isset($_POST['P_name']) && isset($_POST['P_des']) && isset($_POST['P_price'])
+// 			&& isset($_POST['P_size']) && isset($_POST['P_colour']) && isset($_POST['P_quantity']) && isset($_POST['Brand_id']) && isset($_POST['Sub_C_id']))
+// 		{
+// 			$P_name = $_POST['P_name'];
+// 			$P_des = $_POST['P_des'];
+// 			$P_price = $_POST['P_price'];
+// 			$P_image = $_POST['P_image'];
+// 			$P_size = $_POST['P_size'];
+// 			$P_colour = $_POST['P_colour'];
+// 			$Brand_id = $_POST['Brand_id'];
+// 			$Sub_C_id = $_POST['Sub_C_id'];
+// 			$P_quantity = $_POST['P_quantity'];
+			
+			
+// 			if($P_name!='' && $P_des!='' && $P_price!='' && $P_image!='' && $P_size!='' && $P_colour!=''
+// 			&& $Brand_id!='' && $Sub_C_id!='' && $P_quantity!='')
+// 			{
+// 				$sql = "update product set P_name='".$P_name."',P_des='".$P_des."',P_price='".$P_price."',P_image='".$P_image."',
+// 						P_size='".$P_size."',P_colour='".$P_colour."',P_quantity='".$P_quantity."',Brand_id='".$Brand_id."',Sub_C_id='".$Sub_C_id."' 
+// 						where P_id='".$id."'";
+				
+				
+				
+// 				$result = mysqli_query($conn,$sql);
+				
+// 				if($result)
+// 				{
+// 					echo "<meta http-equiv='refresh' content='0;url=product.php'>";
+// 				}
+// 		}
+// 	}
+// 		else
+// 		{
+// 			echo "value not set";
+// 		}
+// }
+
+
+?>
 		
   
   <!-- General JS Scripts -->
