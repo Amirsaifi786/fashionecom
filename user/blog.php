@@ -16,16 +16,42 @@
     <section class="blog spad">
         <div class="container">
             <div class="row">
+
+
+<?php 
+$sql="SELECT * FROM blogs ORDER BY id DESC LIMIT 9";
+$result=mysqli_query($conn,$sql);
+if(mysqli_num_rows($result) > 0) {
+    while ($row=mysqli_fetch_array($result)) {
+        $id = $row['id'];
+        $title = $row['title'];
+        $image = $row['image'];
+        $date = date('d F Y', strtotime($row['created_at'])); //
+        $content = $row['content'];
+        $slug = $row['slug'];
+        $author_id = $row['author_id'];
+        $status = $row['status'];
+        $author_name = "Admin"; 
+
+?>
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="img/blog/blog-1.jpg"></div>
+                        <div class="blog__item__pic set-bg" data-setbg="../admin/Images/<?php echo $image;?>"></div>
                         <div class="blog__item__text">
-                            <span><img src="img/icon/calendar.png" alt=""> 16 February 2020</span>
-                            <h5>What Curling Irons Are The Best Ones</h5>
-                            <a href="#">Read More</a>
+                            <span><img src="img/icon/calendar.png" alt=""> <?php echo $date;?>Authorize by <?php echo $author_name;?> </span>
+                            <h5><?php echo $title;?></h5>
+                            <a href="blogdetail.php">Read More</a>
                         </div>
                     </div>
                 </div>
+
+<?php
+
+    }
+} else {
+    echo "<p>No blog posts available.</p>";
+}
+?>
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="blog__item">
                         <div class="blog__item__pic set-bg" data-setbg="img/blog/blog-2.jpg"></div>

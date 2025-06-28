@@ -15,6 +15,7 @@
                     <div class="table-responsive">
                       <table class="table table-striped table-hover" id="tableExport" style="width:100%;">
                         <a href="productinsert.php">Add record</a>
+                        <div class="success"><a href="bulk_product_upload.php">Bulk Product Upload</a></div>
 						<thead>
                           <tr>
                             <th>Product id</th>

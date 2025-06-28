@@ -34,7 +34,7 @@ require_once('../config/connection.php');
 					
 					 <div class="section-title"> Image</div>
                     <div class="custom-file">
-                      <input type="file" class="form-control" name="image" id="customFile">
+                      <input type="file" class="form-control" name="image[]" id="customFile" multiple>
 						
                     </div>
 					<div class="form-group">
@@ -160,27 +160,81 @@ require_once('../config/connection.php');
 
 // Assuming $conn is your database connection, established elsewhere.
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['image'])) {
-    $data = $_POST; $file = $_FILES['image'];
-    if (isset($data['P_name'], $data['P_des'], $data['P_price'], $data['P_size'], $data['P_colour'], $data['P_quantity'], $data['brand_id'], $data['Sub_C_id']) && $file['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = "Images/"; // Ensure this directory exists and is writable
-        $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $unique_file_name = uniqid('product_', true) . '.' . $file_ext;
-        $destination_path = $upload_dir . $unique_file_name;
+// if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['image'])) {
+//     $data = $_POST; $file = $_FILES['image'];
+//     if (isset($data['P_name'], $data['P_des'], $data['P_price'], $data['P_size'], $data['P_colour'], $data['P_quantity'], $data['brand_id'], $data['Sub_C_id']) && $file['error'] === UPLOAD_ERR_OK) {
+//         $upload_dir = "Images/"; // Ensure this directory exists and is writable
+//         $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+//         $unique_file_name = uniqid('product_', true) . '.' . $file_ext;
+//         $destination_path = $upload_dir . $unique_file_name;
 
-        if (move_uploaded_file($file['tmp_name'], $destination_path)) {
-            $sql = "INSERT INTO product (P_name, P_des, P_price, P_quantity, P_image, P_Size, P_colour, Sub_C_id, Brand_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($conn, $sql);
-            if ($stmt) {
-                // 'ssdisssii' assumes string, string, double, integer, string, string, string, integer, integer
-                mysqli_stmt_bind_param($stmt, 'ssdisssii', $data['P_name'], $data['P_des'], $data['P_price'], $data['P_quantity'], $unique_file_name, $data['P_size'], $data['P_colour'], $data['Sub_C_id'], $data['brand_id']);
-                if (mysqli_stmt_execute($stmt)) { echo "<meta http-equiv='refresh' content='0;url=product.php'>"; }
-                else { echo "DB Error: " . mysqli_error($conn); unlink($destination_path); }
-                mysqli_stmt_close($stmt);
-            } else { echo "DB Prep Error: " . mysqli_error($conn); unlink($destination_path); }
-        } else { echo "File Move Error."; }
-    } else { echo "Missing fields or upload error."; }
-} else { echo "Invalid request or no file uploaded."; }
+//         if (move_uploaded_file($file['tmp_name'], $destination_path)) {
+//             $sql = "INSERT INTO product (P_name, P_des, P_price, P_quantity, P_image, P_Size, P_colour, Sub_C_id, Brand_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+//             $stmt = mysqli_prepare($conn, $sql);
+//             if ($stmt) {
+//                 // 'ssdisssii' assumes string, string, double, integer, string, string, string, integer, integer
+//                 mysqli_stmt_bind_param($stmt, 'ssdisssii', $data['P_name'], $data['P_des'], $data['P_price'], $data['P_quantity'], $unique_file_name, $data['P_size'], $data['P_colour'], $data['Sub_C_id'], $data['brand_id']);
+//                 if (mysqli_stmt_execute($stmt)) { echo "<meta http-equiv='refresh' content='0;url=product.php'>"; }
+//                 else { echo "DB Error: " . mysqli_error($conn); unlink($destination_path); }
+//                 mysqli_stmt_close($stmt);
+//             } else { echo "DB Prep Error: " . mysqli_error($conn); unlink($destination_path); }
+//         } else { echo "File Move Error."; }
+//     } else { echo "Missing fields or upload error."; }
+// } else { echo "Invalid request or no file uploaded."; }
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['image'])) {
+    $data = $_POST;
+    $files = $_FILES['image'];
+    
+    if (isset($data['P_name'], $data['P_des'], $data['P_price'], $data['P_size'], $data['P_colour'], $data['P_quantity'], $data['brand_id'], $data['Sub_C_id'])) {
+        $upload_dir = "Images/"; // Ensure this directory exists and is writable
+        $image_names = []; // Array to hold names of uploaded images
+
+        // Loop through each file
+        foreach ($files['tmp_name'] as $key => $tmp_name) {
+            if ($files['error'][$key] === UPLOAD_ERR_OK) {
+                $file_ext = strtolower(pathinfo($files['name'][$key], PATHINFO_EXTENSION));
+                $unique_file_name = uniqid('product_', true) . '.' . $file_ext;
+                $destination_path = $upload_dir . $unique_file_name;
+
+                if (move_uploaded_file($tmp_name, $destination_path)) {
+                    $image_names[] = $unique_file_name; // Store the name of the uploaded image
+                } else {
+                    echo "File Move Error for " . $files['name'][$key];
+                }
+            } else {
+                echo "Upload error for " . $files['name'][$key];
+            }
+        }
+
+        // Convert the array of image names to a comma-separated string
+        $image_names_string = implode(',', $image_names);
+
+        // Prepare SQL statement
+        $sql = "INSERT INTO product (P_name, P_des, P_price, P_quantity, P_image, P_Size, P_colour, Sub_C_id, Brand_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $sql);
+        
+        if ($stmt) {
+            // 'ssdisssii' assumes string, string, double, integer, string, string, string, integer, integer
+            mysqli_stmt_bind_param($stmt, 'ssdisssii', $data['P_name'], $data['P_des'], $data['P_price'], $data['P_quantity'], $image_names_string, $data['P_size'], $data['P_colour'], $data['Sub_C_id'], $data['brand_id']);
+            if (mysqli_stmt_execute($stmt)) {
+                echo "<meta http-equiv='refresh' content='0;url=product.php'>";
+            } else {
+                echo "DB Error: " . mysqli_error($conn);
+                // Optionally, delete uploaded files if DB insert fails
+                foreach ($image_names as $image_name) {
+                    unlink($upload_dir . $image_name);
+                }
+            }
+            mysqli_stmt_close($stmt);
+        } else {
+            echo "DB Prep Error: " . mysqli_error($conn);
+        }
+    } else {
+        echo "Missing fields.";
+    }
+} else {
+    echo "Invalid request or no files uploaded.";
+}
 
 
 ?>

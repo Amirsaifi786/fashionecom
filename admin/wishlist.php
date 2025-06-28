@@ -29,21 +29,21 @@
 						
                         <tbody>
                           <?php
-						   require_once('../config/connection.php');
-						  $sql="select * from wishlist w join product p join user u where w.Wishlist_id=p.P_id and w.User_id=u.User_id";
-						 $result=mysqli_query($conn,$sql);
-						  while ($row=mysqli_fetch_array($result))
-						  {
-							  
-						  ?>
-						  <tr>
-							<td><?php echo $row['Wishlist_id']?></td> 
-							<td><?php echo $row['User_name']?></td>
-							<td><?php echo $row['P_name']?></td>
-					
-							<?php
-						  }
-						  ?>
+                              require_once('../config/connection.php');
+                              $sql="select * from wishlist w join product p join user u where w.Wishlist_id=p.P_id and w.User_id=u.User_id";
+                            $result=mysqli_query($conn,$sql);
+                              while ($row=mysqli_fetch_array($result))
+                              {
+                                
+                              ?>
+                              <tr>
+                              <td><?php echo $row['Wishlist_id']?></td> 
+                              <td><?php echo $row['User_name']?></td>
+                              <td><?php echo $row['P_name']?></td>
+                          
+                              <?php
+                              }
+                              ?>
 
                         
                         </tbody>

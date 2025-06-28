@@ -34,8 +34,8 @@
  
 		if( $email !='' && $password !='')
 		{
-			$sql= "select User_id,User_name,Email,Password,User_name from User where Email= '".$email."'
-					and Password ='".$password."' and is_admin = 1";
+			$sql= "select User_id,User_name,Email,Password,Is_admin from User where Email= '".$email."'
+					and Password ='".$password."' and Is_admin = 1";
 					
 							
 			$result=mysqli_query($conn,$sql);
@@ -44,6 +44,7 @@
 				session_start();
 				$_SESSION["User_id"] = $row['User_id'];
 				$_SESSION["User_name"] = $row['User_id'];
+				$_SESSION["role"] = $row['Is_admin'];
 				header('location:index.php');
 				}
 				else

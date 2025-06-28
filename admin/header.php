@@ -7,20 +7,19 @@
 	if(isset($_SESSION["User_name"]))
 	{
 		$User_name = $_SESSION['User_name'];
-	}		
+  // $sessionData = print_r($_SESSION, true); // `true` returns it as a string
+  //   echo '<script>alert(' . json_encode($sessionData) . ');</script>';	
+  }		
 	else
 	{
 		
-		
-		header("location:login.php");
+				header("location:login.php");
 	}
 ?>
-<!-- Mirrored from www.radixtouch.in/templates/admin/otika/source/light/index.php by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 23 Nov 2019 14:18:27 GMT -->
 <!DOCTYPE html>
 <html lang="en">
 
 
-<!-- Mirrored from www.radixtouch.in/templates/admin/otika/source/light/index.php by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 23 Nov 2019 14:18:27 GMT -->
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
@@ -36,7 +35,7 @@
 </head>
 
 <body>
-  <div class="loader"></div>
+  <!-- <div class="loader"></div> -->
   <div id="app">
     <div class="main-wrapper main-wrapper-1">
       <div class="navbar-bg"></div>
@@ -79,7 +78,8 @@
       <div class="main-sidebar sidebar-style-2">
         <aside id="sidebar-wrapper">
           <div class="sidebar-brand">
-            <a href="index.php"> <img alt="image" src="shoeholic2.png" height="40" width="180">
+            <a href="index.php"> <img alt="image" src="Images/gtech_logo.png" height="60" width="180">
+
             </a>
           </div>
           <ul class="sidebar-menu">

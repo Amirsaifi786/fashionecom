@@ -1,0 +1,11 @@
+category,subcategory,subcategory2,rating,name,gender,image,mrp,sellprice,stock,size,title,description,specification,status,date
+16,,,4.5,Slim Fit Shirt,male,shirt1.jpg,700,601,100,"S,M,L,XL,XXL
+",,,100% cotton fabric,1,
+16,,,4.5,Running Shoes,male,shoe1.jpg,700,999,50,"S,M,L,XL,XXL
+",,,100% cotton fabric,1,
+16,,,4.5,Smart Watch,male,watch1.jpg,700,1499,30,"S,M,L,XL,XXL
+",,,100% cotton fabric,1,
+16,,,4.5,Graphic Tee,male,tshirt1.jpg,700,499,120,"S,M,L,XL,XXL
+",,,100% cotton fabric,1,
+16,,,4.5,Laptop Backpack,male,bag1.jpg,700,1099,70,"S,M,L,XL,XXL
+",,,100% cotton fabric,1,
